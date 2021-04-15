@@ -1,24 +1,18 @@
 import 'reflect-metadata';
 import { HelloResolver } from './resolvers/hello';
-// import { createConnection } from 'typeorm';
+import { createConnection } from 'typeorm';
 import * as dotenv from 'dotenv';
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
+import { config } from './config/ormconfig';
 
 dotenv.config();
 
 const main = async () => {
-  // const conn = await createConnection({
-  //   type: 'postgres',
-  //   database: process.env.DB_NAME,
-  //   username: process.env.DB_USERNAME,
-  //   password: process.env.DB_PASSWORD,
-  //   logging: true,
-  //   synchronize: true,
-  //   entities: [],
-  // });
-  // tes
+  const conn = await createConnection(config);
+
+  await conn.runMigrations();
 
   const app = express();
 
