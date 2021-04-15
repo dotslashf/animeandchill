@@ -8,14 +8,14 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-enum Season {
+export enum Season {
   Spring,
   Summer,
   Winter,
   Fall,
 }
 
-enum AnimeFormat {
+export enum AnimeFormat {
   TV,
   Tv_short,
   Movie,
@@ -24,7 +24,7 @@ enum AnimeFormat {
   Ona,
 }
 
-enum AnimeStatus {
+export enum AnimeStatus {
   Finished,
   Releasing,
   To_be_released,
@@ -53,22 +53,22 @@ export class Anime extends BaseEntity {
 
   @Field()
   @Column()
-  titleEnglish!: string;
+  titleEnglish: string;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  titleNative: string;
+
+  @Field({ nullable: true })
+  @Column({ type: 'date', nullable: true })
+  startDate: string;
+
+  @Field({ nullable: true })
+  @Column({ type: 'date', nullable: true })
+  endDate: string;
 
   @Field()
-  @Column()
-  titleNative?: string;
-
-  @Field()
-  @Column({ type: 'date' })
-  startDate!: string;
-
-  @Field()
-  @Column({ type: 'date' })
-  endDate?: string;
-
-  @Field()
-  @Column({ type: 'enum', enum: Season })
+  @Column({ type: 'enum', enum: Season, default: Season.Spring })
   season: Season;
 
   @Field()
@@ -84,7 +84,7 @@ export class Anime extends BaseEntity {
   animeStatus: AnimeStatus;
 
   @Field()
-  @Column('int')
+  @Column('int', { default: 16 })
   episodes: number;
 
   @Field()
@@ -95,12 +95,11 @@ export class Anime extends BaseEntity {
   @Column({ type: 'boolean', default: false })
   isAdult: boolean;
 
-  @Field(() => [String])
-  @Column('text', { array: true })
+  @Field(() => [String], { nullable: true })
+  @Column('text', { array: true, nullable: true })
   genre: string[];
 
-  //
   @Field()
-  @Column('int')
+  @Column('int', { default: 0 })
   avgScore: number;
 }
