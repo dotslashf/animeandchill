@@ -90,3 +90,13 @@ export class UpdateAnimeInput {
   @Field(() => String, { nullable: true })
   coverImage?: string;
 }
+
+@InputType()
+export class UserInput {
+  @Field()
+  username: string;
+  @Field()
+  password: string;
+  @Field()
+  email: string;
+}

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
+import { UserResolver } from './resolvers/user';
 import { AnimeResolver } from './resolvers/anime';
-import { HelloResolver } from './resolvers/hello';
 import { createConnection } from 'typeorm';
 import * as dotenv from 'dotenv';
 import express from 'express';
@@ -19,7 +19,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, AnimeResolver],
+      resolvers: [AnimeResolver, UserResolver],
     }),
   });
 
