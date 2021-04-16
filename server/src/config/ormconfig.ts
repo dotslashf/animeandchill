@@ -1,5 +1,3 @@
-import { Anime } from './../entities/Anime';
-import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
 import * as dotenv from 'dotenv';
@@ -13,6 +11,6 @@ export const config: ConnectionOptions = {
   password: process.env.DB_PASSWORD,
   logging: true,
   synchronize: true,
-  entities: [Anime],
-  migrations: [path.join(__dirname, './migrations/*')],
+  entities: ['dist/entities/*.js'],
+  // migrations: [path.join(__dirname, '../migrations/*')],
 };
