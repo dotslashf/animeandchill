@@ -1,6 +1,6 @@
-import { Season, AnimeFormat, AnimeStatus, Anime } from './../entities/Anime';
-import { Arg, Mutation, Resolver, registerEnumType, Query } from 'type-graphql';
-import { AddAnimeInput } from './../types/inputType';
+import { Arg, Mutation, Query, registerEnumType, Resolver } from 'type-graphql';
+import { Anime, AnimeFormat, AnimeStatus, Season } from './../entities/Anime';
+import { AddAnimeInput, UpdateAnimeInput } from './../types/inputType';
 
 registerEnumType(Season, {
   name: 'Season',
@@ -23,6 +23,30 @@ export class AnimeResolver {
   async addAnime(@Arg('input') input: AddAnimeInput): Promise<Anime> {
     const newAnime = await Anime.create(input).save();
     return newAnime;
+  }
+
+  @Mutation(() => Boolean)
+  async removeAnime(@Arg('id') id: number): Promise<Boolean> {
+    const anime = await Anime.findOne({ id: id });
+    if (anime) {
+      await Anime.delete(anime.id);
+      return true;
+    }
+    return false;
+  }
+
+  @Mutation(() => Anime, { nullable: true })
+  async updateAnime(
+    @Arg('input') input: UpdateAnimeInput,
+    @Arg('id') id: number
+  ): Promise<Anime | null | undefined> {
+    let anime = await Anime.findOne(id);
+    if (!anime) {
+      return null;
+    }
+    await Anime.update({ id }, input);
+    const updatedAnime = await Anime.findOne({ where: { id } });
+    return updatedAnime;
   }
 
   @Query(() => [Anime])

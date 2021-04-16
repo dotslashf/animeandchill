@@ -45,3 +45,48 @@ export class AddAnimeInput {
   @Field(() => String, { nullable: true })
   coverImage: string;
 }
+
+@InputType({ description: 'Update anime data from animeandchill db' })
+export class UpdateAnimeInput {
+  @Field(() => String, { nullable: true })
+  titleRomaji?: string;
+
+  @Field(() => String, { nullable: true })
+  titleEnglish?: string;
+
+  @Field(() => String, { nullable: true })
+  titleNative?: string;
+
+  @Field(() => String, { nullable: true })
+  startDate?: string;
+
+  @Field(() => String, { nullable: true })
+  endDate?: string;
+
+  @Field(() => Season, { nullable: true })
+  season?: Season;
+
+  @Field(() => AnimeFormat, { nullable: true })
+  animeFormat?: AnimeFormat;
+
+  @Field(() => AnimeStatus, { nullable: true })
+  animeStatus?: AnimeStatus;
+
+  @Field(() => Number, { nullable: true })
+  episodes?: number;
+
+  @Field(() => Number, { nullable: true })
+  duration?: number;
+
+  @Field(() => Boolean, { nullable: true })
+  isAdult?: boolean;
+
+  @Field(() => [String], { nullable: true })
+  genre?: string[];
+
+  @Field(() => Number, { nullable: true })
+  avgScore?: number;
+
+  @Field(() => String, { nullable: true })
+  coverImage?: string;
+}
