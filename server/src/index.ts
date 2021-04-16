@@ -1,3 +1,4 @@
+import { ApolloContext } from './types/apolloContext';
 import 'reflect-metadata';
 import { UserResolver } from './resolvers/user';
 import { AnimeResolver } from './resolvers/anime';
@@ -7,28 +8,58 @@ import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
 import { config } from './config/ormconfig';
+import session from 'express-session';
+import connectRedis from 'connect-redis';
+import Redis from 'ioredis';
+import cors from 'cors';
 
 dotenv.config();
 
 const main = async () => {
   const conn = await createConnection(config);
-
   await conn.runMigrations();
 
+  const port = process.env.SERVER_PORT || 3000;
+
   const app = express();
+
+  const RedisStore = connectRedis(session);
+  const redis = new Redis();
+
+  app.use(
+    cors({
+      credentials: true,
+      origin: 'http://localhost:4000',
+    })
+  );
+
+  app.use(
+    session({
+      name: process.env.COOKIE_NAME,
+      store: new RedisStore({ client: redis, disableTouch: true }),
+      secret: process.env.SESSION_SECRET!,
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24, // 1 days,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+      },
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [AnimeResolver, UserResolver],
     }),
+    context: ({ req, res }): ApolloContext => ({ req, res, redis })
   });
 
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
-  app.get('/', (_, res) => [res.status(200).json({ msg: 'Hello' })]);
-
-  app.listen(process.env.SERVER_PORT || 3000, () => {
-    console.log(`Server is running on ${process.env.SERVER_PORT || 3000} 🚀`);
+  app.listen(port, () => {
+    console.log(`Server is running on ${port} 🚀`);
   });
 };
 

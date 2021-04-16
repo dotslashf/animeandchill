@@ -30,13 +30,9 @@ export class UserResolver {
       return { errors };
     }
 
-    console.log(input);
-
     const hashPassword = await argon2.hash(input.password);
 
     const user = await User.findOne({ where: { email: input.email } });
-    console.log(!user);
-
     if (!user) {
       const newUser = await User.create({
         email: input.email,
