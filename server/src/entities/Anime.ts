@@ -67,15 +67,15 @@ export class Anime extends BaseEntity {
   @Column({ type: 'date', nullable: true })
   endDate: string;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({ type: 'enum', enum: Season, default: Season.Spring })
   season: Season;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({ type: 'enum', enum: AnimeFormat, default: AnimeFormat.TV })
   animeFormat: AnimeFormat;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({
     type: 'enum',
     enum: AnimeStatus,
@@ -83,11 +83,11 @@ export class Anime extends BaseEntity {
   })
   animeStatus: AnimeStatus;
 
-  @Field()
+  @Field({ nullable: true })
   @Column('int', { default: 16 })
   episodes: number;
 
-  @Field()
+  @Field({ nullable: true })
   @Column('int')
   duration: number;
 
@@ -99,7 +99,11 @@ export class Anime extends BaseEntity {
   @Column('text', { array: true, nullable: true })
   genre: string[];
 
-  @Field()
+  @Field({ nullable: true })
   @Column('int', { default: 0 })
   avgScore: number;
+
+  @Field({ nullable: true })
+  @Column('text', { nullable: true })
+  coverImage: string;
 }

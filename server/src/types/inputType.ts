@@ -41,4 +41,7 @@ export class AddAnimeInput {
 
   @Field(() => Number, { nullable: true })
   avgScore: number;
+
+  @Field(() => String, { nullable: true })
+  coverImage: string;
 }
