@@ -1,4 +1,12 @@
-import { Arg, Mutation, Query, registerEnumType, Resolver } from 'type-graphql';
+import { isAuth } from './../middleware/isAuth';
+import {
+  Arg,
+  Mutation,
+  Query,
+  registerEnumType,
+  Resolver,
+  UseMiddleware,
+} from 'type-graphql';
 import { Anime, AnimeFormat, AnimeStatus, Season } from './../entities/Anime';
 import { AddAnimeInput, UpdateAnimeInput } from './../types/inputType';
 
@@ -20,6 +28,7 @@ registerEnumType(AnimeStatus, {
 @Resolver()
 export class AnimeResolver {
   @Mutation(() => Anime, { nullable: true })
+  @UseMiddleware(isAuth)
   async addAnime(@Arg('input') input: AddAnimeInput): Promise<Anime> {
     const newAnime = await Anime.create(input).save();
     return newAnime;
