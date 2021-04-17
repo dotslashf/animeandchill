@@ -35,6 +35,7 @@ export class AnimeResolver {
   }
 
   @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
   async removeAnime(@Arg('id') id: number): Promise<Boolean> {
     const anime = await Anime.findOne({ id: id });
     if (anime) {
@@ -45,6 +46,7 @@ export class AnimeResolver {
   }
 
   @Mutation(() => Anime, { nullable: true })
+  @UseMiddleware(isAuth)
   async updateAnime(
     @Arg('input') input: UpdateAnimeInput,
     @Arg('id') id: number
