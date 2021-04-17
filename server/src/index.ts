@@ -18,7 +18,7 @@ dotenv.config();
 
 const main = async () => {
   const conn = await createConnection(config);
-  await conn.runMigrations();
+  // await conn.runMigrations();
 
   const port = process.env.SERVER_PORT || 3000;
 

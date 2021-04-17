@@ -9,30 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
-export enum Season {
-  Spring,
-  Summer,
-  Winter,
-  Fall,
-}
-
-export enum AnimeFormat {
-  TV,
-  Tv_short,
-  Movie,
-  Special,
-  Ova,
-  Ona,
-}
-
-export enum AnimeStatus {
-  Finished,
-  Releasing,
-  To_be_released,
-  Cancelled,
-  Hiatus,
-}
+import { Season, AnimeFormat, AnimeStatus } from '../types/enum';
 
 @ObjectType()
 @Entity()
@@ -69,21 +46,21 @@ export class Anime extends BaseEntity {
   @Column({ type: 'date', nullable: true })
   endDate: string;
 
-  @Field({ nullable: true })
+  @Field(() => Season, { nullable: true })
   @Column({ type: 'enum', enum: Season, default: Season.Spring })
-  season: Season;
+  season: string;
 
-  @Field({ nullable: true })
+  @Field(() => AnimeFormat, { nullable: true })
   @Column({ type: 'enum', enum: AnimeFormat, default: AnimeFormat.TV })
-  animeFormat: AnimeFormat;
+  animeFormat: string;
 
-  @Field({ nullable: true })
+  @Field(() => AnimeStatus, { nullable: true })
   @Column({
     type: 'enum',
     enum: AnimeStatus,
     default: AnimeStatus.To_be_released,
   })
-  animeStatus: AnimeStatus;
+  animeStatus: string;
 
   @Field({ nullable: true })
   @Column('int', { default: 16 })

@@ -156,5 +156,9 @@ export class UserResolver {
     return true;
   }
 
-  // @Query(() => [User])
+  @Query(() => [User])
+  @UseMiddleware(isSuperUser)
+  async listUser(): Promise<User[]> {
+    return await User.find({});
+  }
 }

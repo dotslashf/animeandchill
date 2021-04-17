@@ -10,7 +10,7 @@ export const isSuperUser: MiddlewareFn<ApolloContext> = async (
     where: { id: context.req.session.userId },
   });
   if (user?.userType !== 0) {
-    throw new Error('Not a valid user');
+    throw new Error('Account is not Superuser');
   }
   return next();
 };

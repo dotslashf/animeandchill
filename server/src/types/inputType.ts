@@ -1,4 +1,4 @@
-import { Season, AnimeFormat, AnimeStatus } from '../entities/Anime';
+import { Season, AnimeFormat, AnimeStatus } from '../types/enum';
 import { InputType, Field } from 'type-graphql';
 
 @InputType({ description: 'Add anime to animeandchill db' })
@@ -19,13 +19,13 @@ export class AddAnimeInput {
   endDate: string;
 
   @Field(() => Season, { nullable: true })
-  season: Season;
+  season: string;
 
   @Field(() => AnimeFormat, { nullable: true })
-  animeFormat: AnimeFormat;
+  animeFormat: string;
 
   @Field(() => AnimeStatus, { nullable: true })
-  animeStatus: AnimeStatus;
+  animeStatus: string;
 
   @Field(() => Number, { nullable: true })
   episodes: number;
@@ -64,13 +64,13 @@ export class UpdateAnimeInput {
   endDate?: string;
 
   @Field(() => Season, { nullable: true })
-  season?: Season;
+  season?: string;
 
   @Field(() => AnimeFormat, { nullable: true })
-  animeFormat?: AnimeFormat;
+  animeFormat?: string;
 
   @Field(() => AnimeStatus, { nullable: true })
-  animeStatus?: AnimeStatus;
+  animeStatus?: string;
 
   @Field(() => Number, { nullable: true })
   episodes?: number;

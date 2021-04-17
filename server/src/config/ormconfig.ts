@@ -1,6 +1,7 @@
 import { ConnectionOptions } from 'typeorm';
 
 import * as dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config();
 
@@ -12,5 +13,5 @@ export const config: ConnectionOptions = {
   logging: true,
   synchronize: true,
   entities: ['dist/entities/*.js'],
-  // migrations: [path.join(__dirname, '../migrations/*')],
+  migrations: [path.join(__dirname, '../migrations/*')],
 };

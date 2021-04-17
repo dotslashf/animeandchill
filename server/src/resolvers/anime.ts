@@ -7,8 +7,9 @@ import {
   Resolver,
   UseMiddleware,
 } from 'type-graphql';
-import { Anime, AnimeFormat, AnimeStatus, Season } from './../entities/Anime';
+import { Anime } from './../entities/Anime';
 import { AddAnimeInput, UpdateAnimeInput } from './../types/inputType';
+import { Season, AnimeFormat, AnimeStatus } from '../types/enum';
 
 registerEnumType(Season, {
   name: 'Season',
