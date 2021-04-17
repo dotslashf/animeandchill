@@ -8,6 +8,7 @@ import {
   Field,
   Mutation,
   ObjectType,
+  Query,
   Resolver,
   UseMiddleware,
 } from 'type-graphql';
@@ -35,7 +36,10 @@ class UserResponse {
 @Resolver()
 export class UserResolver {
   @Mutation(() => UserResponse)
-  async register(@Arg('input') input: UserInput): Promise<UserResponse> {
+  async register(
+    @Arg('input') input: UserInput,
+    @Ctx() { req }: ApolloContext
+  ): Promise<UserResponse> {
     const errors = validateRegister(input);
     if (errors) {
       return { errors };
@@ -49,8 +53,10 @@ export class UserResolver {
         email: input.email,
         username: input.username,
         password: hashPassword,
+        userType: 1,
       }).save();
 
+      req.session.userId = newUser.id;
       return { user: newUser };
     }
 
@@ -116,5 +122,47 @@ export class UserResolver {
         resolve(true);
       });
     });
+  }
+
+  @Query(() => UserResponse)
+  @UseMiddleware(isAuth)
+  async me(@Ctx() { req }: ApolloContext): Promise<UserResponse> {
+    const user = await User.findOne({ where: { id: req.session.userId } });
+    if (!user) {
+      return {
+        errors: [
+          {
+            field: 'User',
+            message: 'Not exist',
+          },
+        ],
+      };
+    }
+
+    return {
+      user,
+    };
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async deleteUser(
+    @Arg('username') username: string,
+    @Ctx() { req }: ApolloContext
+  ): Promise<Boolean> {
+    const su = await User.findOne({
+      where: { id: req.session.userId },
+    });
+
+    if (su?.userType !== 0) {
+      return false;
+    }
+
+    const user = await User.findOne({ where: { username } });
+    if (!user) {
+      return false;
+    }
+    await User.delete(user.id);
+    return true;
   }
 }

@@ -9,8 +9,8 @@ import {
 } from 'typeorm';
 
 enum UserType {
-  Admin,
   SuperUser,
+  Admin,
 }
 
 @ObjectType()
