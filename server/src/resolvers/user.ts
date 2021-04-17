@@ -1,3 +1,4 @@
+import { isSuperUser } from './../middleware/isSuperUser';
 import { isAuth } from './../middleware/isAuth';
 import { ApolloContext } from './../types/apolloContext';
 import { UserInput } from './../types/inputType';
@@ -145,19 +146,8 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
-  @UseMiddleware(isAuth)
-  async deleteUser(
-    @Arg('username') username: string,
-    @Ctx() { req }: ApolloContext
-  ): Promise<Boolean> {
-    const su = await User.findOne({
-      where: { id: req.session.userId },
-    });
-
-    if (su?.userType !== 0) {
-      return false;
-    }
-
+  @UseMiddleware(isSuperUser)
+  async deleteUser(@Arg('username') username: string): Promise<Boolean> {
     const user = await User.findOne({ where: { username } });
     if (!user) {
       return false;
@@ -165,4 +155,6 @@ export class UserResolver {
     await User.delete(user.id);
     return true;
   }
+
+  // @Query(() => [User])
 }
