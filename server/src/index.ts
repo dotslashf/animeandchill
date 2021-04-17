@@ -1,5 +1,6 @@
-import { ApolloContext } from './types/apolloContext';
 import 'reflect-metadata';
+import { EpisodeResolver } from './resolvers/episode';
+import { ApolloContext } from './types/apolloContext';
 import { UserResolver } from './resolvers/user';
 import { AnimeResolver } from './resolvers/anime';
 import { createConnection } from 'typeorm';
@@ -51,9 +52,9 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [AnimeResolver, UserResolver],
+      resolvers: [AnimeResolver, UserResolver, EpisodeResolver],
     }),
-    context: ({ req, res }): ApolloContext => ({ req, res, redis })
+    context: ({ req, res }): ApolloContext => ({ req, res, redis }),
   });
 
   apolloServer.applyMiddleware({ app, cors: false });

@@ -1,9 +1,11 @@
+import { Episode } from './Episode';
 import { Field, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -106,4 +108,8 @@ export class Anime extends BaseEntity {
   @Field({ nullable: true })
   @Column('text', { nullable: true })
   coverImage: string;
+
+  @Field(() => [Episode])
+  @OneToMany(() => Episode, episode => episode.anime, { cascade: true })
+  episodeList: Episode[];
 }

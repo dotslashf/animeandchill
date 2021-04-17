@@ -62,7 +62,8 @@ export class AnimeResolver {
 
   @Query(() => [Anime])
   async listAnime(): Promise<Anime[]> {
-    const listAnime = await Anime.find();
-    return listAnime;
+    return await Anime.find({
+      relations: ['episodeList'],
+    });
   }
 }
