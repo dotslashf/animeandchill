@@ -26,15 +26,12 @@ export class Anime extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date = new Date();
 
-  @Field()
   @Column()
   titleRomaji!: string;
 
-  @Field()
   @Column()
   titleEnglish: string;
 
-  @Field({ nullable: true })
   @Column({ nullable: true })
   titleNative: string;
 

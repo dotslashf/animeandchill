@@ -21,6 +21,18 @@ export class UserResponse {
 }
 
 @ObjectType()
+export class TitleAnime {
+  @Field(() => String)
+  titleRomaji?: string;
+
+  @Field(() => String)
+  titleEnglish?: string;
+
+  @Field(() => String)
+  titleNative?: string;
+}
+
+@ObjectType()
 export class AnimeResponse {
   @Field(() => [FieldError], { nullable: true })
   errors?: FieldError[];
