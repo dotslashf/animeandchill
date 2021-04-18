@@ -1,3 +1,4 @@
+import { UserResponse } from './../types/responseType';
 import { isSuperUser } from './../middleware/isSuperUser';
 import { isAuth } from './../middleware/isAuth';
 import { ApolloContext } from './../types/apolloContext';
@@ -6,9 +7,7 @@ import { User } from '../entities/User';
 import {
   Arg,
   Ctx,
-  Field,
   Mutation,
-  ObjectType,
   Query,
   Resolver,
   UseMiddleware,
@@ -16,23 +15,6 @@ import {
 import { validateRegister } from '../utils/validate';
 import argon2 from 'argon2';
 import * as dotenv from 'dotenv';
-
-@ObjectType()
-export class FieldError {
-  @Field()
-  field: string;
-  @Field()
-  message: string;
-}
-
-@ObjectType()
-class UserResponse {
-  @Field(() => [FieldError], { nullable: true })
-  errors?: FieldError[];
-
-  @Field(() => User, { nullable: true })
-  user?: User;
-}
 
 @Resolver()
 export class UserResolver {

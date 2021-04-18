@@ -1,5 +1,5 @@
-import { FieldError } from './../resolvers/user';
-import { UserInput } from './../types/inputType';
+import { FieldError } from '../types/responseType';
+import { UserInput } from '../types/inputType';
 
 const validateEmail = (email: string) => {
   return /\S+@\S+\.\S+/.test(email);
