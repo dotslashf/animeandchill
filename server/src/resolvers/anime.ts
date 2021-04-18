@@ -8,8 +8,9 @@ import {
   UseMiddleware,
 } from 'type-graphql';
 import { Anime } from './../entities/Anime';
-import { AddAnimeInput, UpdateAnimeInput } from './../types/inputType';
+import { AnimeInput, UpdateAnimeInput } from './../types/inputType';
 import { Season, AnimeFormat, AnimeStatus } from '../types/enum';
+import { ILike } from 'typeorm';
 
 registerEnumType(Season, {
   name: 'Season',
@@ -30,7 +31,7 @@ registerEnumType(AnimeStatus, {
 export class AnimeResolver {
   @Mutation(() => Anime, { nullable: true })
   @UseMiddleware(isAuth)
-  async addAnime(@Arg('input') input: AddAnimeInput): Promise<Anime> {
+  async addAnime(@Arg('input') input: AnimeInput): Promise<Anime> {
     const newAnime = await Anime.create(input).save();
     return newAnime;
   }
@@ -65,6 +66,23 @@ export class AnimeResolver {
   async listAnime(): Promise<Anime[]> {
     return await Anime.find({
       relations: ['episodeList'],
+    });
+  }
+
+  @Query(() => [Anime])
+  async searchAnime(@Arg('search') search: string): Promise<Anime[]> {
+    return await Anime.find({
+      where: [
+        {
+          titleEnglish: ILike(`%${search}%`),
+        },
+        {
+          titleRomaji: ILike(`%${search}%`),
+        },
+        {
+          titleNative: ILike(`%${search}%`),
+        },
+      ],
     });
   }
 }
