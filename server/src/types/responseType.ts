@@ -12,15 +12,6 @@ export class FieldError {
 }
 
 @ObjectType()
-export class UserResponse {
-  @Field(() => [FieldError], { nullable: true })
-  errors?: FieldError[];
-
-  @Field(() => User, { nullable: true })
-  user?: User;
-}
-
-@ObjectType()
 export class TitleAnime {
   @Field(() => String)
   titleRomaji?: string;
@@ -33,19 +24,24 @@ export class TitleAnime {
 }
 
 @ObjectType()
-export class AnimeResponse {
+class BaseResponse {
   @Field(() => [FieldError], { nullable: true })
-  errors?: FieldError[];
+  errors?: FieldError[] | FieldError;
+}
+@ObjectType()
+export class UserResponse extends BaseResponse {
+  @Field(() => User, { nullable: true })
+  user?: User;
+}
 
+@ObjectType()
+export class AnimeResponse extends BaseResponse {
   @Field(() => User, { nullable: true })
   anime?: Anime;
 }
 
 @ObjectType()
-export class EpisodeResponse {
-  @Field(() => FieldError, { nullable: true })
-  errors?: FieldError;
-
+export class EpisodeResponse extends BaseResponse {
   @Field(() => Episode, { nullable: true })
   episode?: Episode;
 }
