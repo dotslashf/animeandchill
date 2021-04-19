@@ -64,3 +64,13 @@ export class UserInput {
   @Field()
   email: string;
 }
+
+@InputType()
+export class UpdateUserInput extends UserInput {
+  @Field({ nullable: true })
+  username: string;
+  @Field({ nullable: true })
+  password: string;
+  @Field({ nullable: true })
+  email: string;
+}

@@ -9,7 +9,11 @@ export const isSuperUser: MiddlewareFn<ApolloContext> = async (
   const user = await User.findOne({
     where: { id: context.req.session.userId },
   });
-  if (user?.userType !== 'SuperUser') {
+
+  if (!user) {
+    throw new Error('Accont is not recognized');
+  }
+  if (parseInt(user.userType!) !== 0) {
     throw new Error('Account is not Superuser');
   }
   return next();

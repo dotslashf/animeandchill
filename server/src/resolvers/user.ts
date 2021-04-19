@@ -3,7 +3,7 @@ import { UserResponse } from './../types/responseType';
 import { isSuperUser } from './../middleware/isSuperUser';
 import { isAuth } from './../middleware/isAuth';
 import { ApolloContext } from './../types/apolloContext';
-import { UserInput } from './../types/inputType';
+import { UserInput, UpdateUserInput } from './../types/inputType';
 import { User } from '../entities/User';
 import {
   Arg,
@@ -148,5 +148,42 @@ export class UserResolver {
   @UseMiddleware(isSuperUser)
   async listUser(): Promise<User[]> {
     return await User.find({});
+  }
+
+  @Mutation(() => UserResponse)
+  @UseMiddleware(isAuth)
+  async updateUser(
+    @Arg('input') input: UpdateUserInput,
+    @Arg('confirmPassword') confirmPassword: string,
+    @Ctx() { req }: ApolloContext
+  ): Promise<UserResponse> {
+    const user = await User.findOne({ where: { id: req.session.userId } });
+    if (!user) {
+      return {
+        errors: {
+          field: 'User',
+          message: 'Not found',
+        },
+      };
+    }
+
+    const validPassword = await argon2.verify(user.password, confirmPassword);
+
+    if (!validPassword) {
+      return {
+        errors: [
+          {
+            field: 'Password',
+            message: 'Credentials did not match',
+          },
+        ],
+      };
+    }
+
+    await User.update(user.id, input);
+    const updatedUser = await User.findOne({ where: { id: user.id } });
+    return {
+      user: updatedUser,
+    };
   }
 }
