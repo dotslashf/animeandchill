@@ -1,3 +1,4 @@
+import { rejectAuth } from './../middleware/rejectAuth';
 import { UserType } from './../types/enum';
 import { UserResponse } from './../types/responseType';
 import { isSuperUser } from './../middleware/isSuperUser';
@@ -26,6 +27,7 @@ registerEnumType(UserType, {
 @Resolver()
 export class UserResolver {
   @Mutation(() => UserResponse)
+  @UseMiddleware(rejectAuth)
   async register(
     @Arg('input') input: UserInput,
     @Ctx() { req }: ApolloContext
@@ -55,6 +57,7 @@ export class UserResolver {
   }
 
   @Mutation(() => UserResponse)
+  @UseMiddleware(rejectAuth)
   async login(
     @Arg('username') username: string,
     @Arg('password') password: string,
