@@ -1,3 +1,4 @@
+import { UserType } from './../types/enum';
 import { Field, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
@@ -7,11 +8,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
-enum UserType {
-  SuperUser,
-  Admin,
-}
 
 @ObjectType()
 @Entity()
@@ -39,7 +35,7 @@ export class User extends BaseEntity {
   @Column()
   password!: string;
 
-  @Field(() => String)
+  @Field(() => UserType)
   @Column({ type: 'enum', enum: UserType, default: UserType.Admin })
-  userType!: UserType;
+  userType!: string;
 }

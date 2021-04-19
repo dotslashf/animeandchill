@@ -21,3 +21,8 @@ export enum AnimeStatus {
   Cancelled,
   Hiatus,
 }
+
+export enum UserType {
+  SuperUser,
+  Admin,
+}

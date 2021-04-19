@@ -1,3 +1,4 @@
+import { UserType } from './../types/enum';
 import { UserResponse } from './../types/responseType';
 import { isSuperUser } from './../middleware/isSuperUser';
 import { isAuth } from './../middleware/isAuth';
@@ -9,12 +10,18 @@ import {
   Ctx,
   Mutation,
   Query,
+  registerEnumType,
   Resolver,
   UseMiddleware,
 } from 'type-graphql';
 import { validateRegister } from '../utils/validate';
 import argon2 from 'argon2';
 import * as dotenv from 'dotenv';
+
+registerEnumType(UserType, {
+  name: 'UserType',
+  description: 'User type',
+});
 
 @Resolver()
 export class UserResolver {
@@ -36,7 +43,6 @@ export class UserResolver {
         email: input.email,
         username: input.username,
         password: hashPassword,
-        userType: 1,
       }).save();
 
       req.session.userId = newUser.id;
