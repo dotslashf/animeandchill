@@ -45,3 +45,33 @@ export class EpisodeResponse extends BaseResponse {
   @Field(() => Episode, { nullable: true })
   episode?: Episode;
 }
+
+@ObjectType()
+class Page {
+  @Field(() => Number)
+  total: number;
+
+  @Field(() => Number)
+  perPage: number;
+
+  @Field(() => Number)
+  currentPage: number;
+
+  @Field(() => Number)
+  lastPage: number;
+
+  @Field(() => Boolean)
+  hasNextPage: boolean;
+}
+
+@ObjectType()
+class BasePaginated {
+  @Field(() => Page)
+  pageInfo: Page;
+}
+
+@ObjectType()
+export class AnimePaginated extends BasePaginated {
+  @Field(() => [Anime], { nullable: true })
+  anime?: Anime[];
+}

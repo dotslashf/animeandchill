@@ -17,6 +17,7 @@ import cors from 'cors';
 dotenv.config();
 
 const main = async () => {
+  // @ts-ignore
   const conn = await createConnection(config);
   // await conn.runMigrations();
 

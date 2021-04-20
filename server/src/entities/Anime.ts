@@ -43,7 +43,6 @@ export class Anime extends BaseEntity {
   @Column({ type: 'date', nullable: true })
   endDate: string;
 
-  @Field(() => Season, { nullable: true })
   @Column({ type: 'enum', enum: Season, default: Season.Spring })
   season: string;
 

@@ -1,7 +1,11 @@
+import { AnimePaginated } from './../types/responseType';
 import { isAuth } from './../middleware/isAuth';
 import {
   Arg,
+  Field,
   FieldResolver,
+  InputType,
+  Int,
   Mutation,
   Query,
   registerEnumType,
@@ -29,6 +33,15 @@ registerEnumType(AnimeStatus, {
   name: 'AnimeStatus',
   description: 'Anime current status',
 });
+
+@InputType()
+class AnimeOrder {
+  @Field(() => String, { nullable: true })
+  order: 'avgScore' | 'updatedAt' | 'startDate' | 'titleEnglish';
+
+  @Field(() => String, { nullable: true })
+  sort: 'ASC' | 'DESC';
+}
 
 @Resolver(Anime)
 export class AnimeResolver {
@@ -80,11 +93,46 @@ export class AnimeResolver {
     return updatedAnime;
   }
 
-  @Query(() => [Anime])
-  async listAnime(): Promise<Anime[]> {
-    return await Anime.find({
+  @Query(() => AnimePaginated)
+  async listAnime(
+    @Arg('perPage', () => Int) perPage: number,
+    @Arg('skip', () => Int, { nullable: true }) skip: number | 1,
+    @Arg('order', () => AnimeOrder, {
+      nullable: true,
+      defaultValue: { order: 'updatedAt', sort: 'ASC' },
+    })
+    order: AnimeOrder
+  ): Promise<AnimePaginated> {
+    let skipPage: number;
+
+    const totalAnime = await Anime.count({});
+    const lastPage = Math.floor(totalAnime / perPage);
+
+    if (skip > lastPage) {
+      skipPage = lastPage;
+    } else {
+      skipPage = skip;
+    }
+
+    let orderSort = { [order.order]: order.sort };
+
+    const anime = await Anime.find({
+      take: perPage,
+      skip: skipPage * perPage - perPage,
       relations: ['episodeList'],
+      order: orderSort,
     });
+
+    return {
+      pageInfo: {
+        total: totalAnime,
+        lastPage,
+        perPage,
+        currentPage: skipPage,
+        hasNextPage: skipPage < lastPage,
+      },
+      anime,
+    };
   }
 
   @Query(() => [Anime])
