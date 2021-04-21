@@ -83,3 +83,15 @@ export class AnimeOrder {
   @Field(() => String, { nullable: true })
   sort: 'ASC' | 'DESC';
 }
+
+@InputType()
+export class AnimeSearchCriteria {
+  @Field(() => Season, { nullable: true })
+  season?: string;
+
+  @Field(() => [String], { nullable: true })
+  genre?: string[];
+
+  @Field(() => Boolean, { nullable: true })
+  isAdult?: boolean;
+}

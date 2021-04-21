@@ -13,9 +13,14 @@ import {
   UseMiddleware,
 } from 'type-graphql';
 import { Anime } from './../entities/Anime';
-import { AnimeInput, UpdateAnimeInput, AnimeOrder } from './../types/inputType';
+import {
+  AnimeInput,
+  UpdateAnimeInput,
+  AnimeOrder,
+  AnimeSearchCriteria,
+} from './../types/inputType';
 import { Season, AnimeFormat, AnimeStatus } from '../types/enum';
-import { ILike } from 'typeorm';
+import { getRepository, ILike } from 'typeorm';
 import { TitleAnime } from '../types/responseType';
 
 registerEnumType(Season, {
@@ -149,7 +154,7 @@ export class AnimeResolver {
 
   @Query(() => AnimePaginated)
   async searchAnime(
-    @Arg('search') search: string,
+    @Arg('search', { nullable: true }) search: string,
     @Arg('perPage', () => Int, { nullable: true, defaultValue: 10 })
     perPage: number,
     @Arg('skip', () => Int, { nullable: true, defaultValue: 1 })
@@ -158,34 +163,51 @@ export class AnimeResolver {
       nullable: true,
       defaultValue: { order: 'updatedAt', sort: 'ASC' },
     })
-    order: AnimeOrder
+    order: AnimeOrder,
+    @Arg('searchCriteria', () => AnimeSearchCriteria, { nullable: true })
+    searchCriteria: AnimeSearchCriteria
   ): Promise<AnimePaginated> {
     const [totalRepo, lastPage, skipPage] = await pagination(
       Anime,
       perPage,
       skip,
-      search
+      search,
+      searchCriteria
     );
 
-    let orderSort = { [order.order]: order.sort };
+    const qb = getRepository(Anime)
+      .createQueryBuilder('anime')
+      .take(perPage)
+      .skip(Math.abs(skipPage * perPage - perPage))
+      .orderBy(`anime.${order.order}`, order.sort)
+      .leftJoinAndSelect('anime.episodeList', 'episode');
 
-    const anime = await Anime.find({
-      take: perPage,
-      skip: skipPage * perPage - perPage,
-      relations: ['episodeList'],
-      order: orderSort,
-      where: [
+    if (search) {
+      qb.where(
+        '(anime.titleEnglish ILIKE :titleEnglish or anime.titleRomaji ILIKE :titleRomaji)',
         {
-          titleEnglish: ILike(`%${search}%`),
-        },
-        {
-          titleRomaji: ILike(`%${search}%`),
-        },
-        {
-          titleNative: ILike(`%${search}%`),
-        },
-      ],
-    });
+          titleEnglish: `%${search}%`,
+          titleRomaji: `%${search}%`,
+        }
+      );
+    }
+    if ('isAdult' in searchCriteria) {
+      qb.andWhere('anime.isAdult = :isAdult', {
+        isAdult: searchCriteria.isAdult,
+      });
+    }
+    if ('season' in searchCriteria) {
+      qb.andWhere('anime.season = :season', {
+        season: searchCriteria.season,
+      });
+    }
+    if ('genre' in searchCriteria) {
+      qb.andWhere('anime.genre @> ARRAY[:...genre]', {
+        genre: searchCriteria.genre,
+      });
+    }
+
+    const anime = await qb.getMany();
 
     return {
       pageInfo: {
