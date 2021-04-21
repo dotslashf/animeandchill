@@ -110,8 +110,10 @@ export class AnimeResolver {
 
   @Query(() => AnimePaginated)
   async listAnime(
-    @Arg('perPage', () => Int) perPage: number,
-    @Arg('skip', () => Int, { nullable: true }) skip: number | 1,
+    @Arg('perPage', () => Int, { nullable: true, defaultValue: 10 })
+    perPage: number,
+    @Arg('skip', () => Int, { nullable: true, defaultValue: 1 })
+    skip: number | 1,
     @Arg('order', () => AnimeOrder, {
       nullable: true,
       defaultValue: { order: 'updatedAt', sort: 'ASC' },
@@ -145,9 +147,33 @@ export class AnimeResolver {
     };
   }
 
-  @Query(() => [Anime])
-  async searchAnime(@Arg('search') search: string): Promise<Anime[]> {
-    return await Anime.find({
+  @Query(() => AnimePaginated)
+  async searchAnime(
+    @Arg('search') search: string,
+    @Arg('perPage', () => Int, { nullable: true, defaultValue: 10 })
+    perPage: number,
+    @Arg('skip', () => Int, { nullable: true, defaultValue: 1 })
+    skip: number | 1,
+    @Arg('order', () => AnimeOrder, {
+      nullable: true,
+      defaultValue: { order: 'updatedAt', sort: 'ASC' },
+    })
+    order: AnimeOrder
+  ): Promise<AnimePaginated> {
+    const [totalRepo, lastPage, skipPage] = await pagination(
+      Anime,
+      perPage,
+      skip,
+      search
+    );
+
+    let orderSort = { [order.order]: order.sort };
+
+    const anime = await Anime.find({
+      take: perPage,
+      skip: skipPage * perPage - perPage,
+      relations: ['episodeList'],
+      order: orderSort,
       where: [
         {
           titleEnglish: ILike(`%${search}%`),
@@ -160,5 +186,16 @@ export class AnimeResolver {
         },
       ],
     });
+
+    return {
+      pageInfo: {
+        total: totalRepo,
+        lastPage,
+        perPage,
+        currentPage: skipPage,
+        hasNextPage: skipPage < lastPage,
+      },
+      anime,
+    };
   }
 }
