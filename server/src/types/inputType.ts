@@ -74,3 +74,12 @@ export class UpdateUserInput extends UserInput {
   @Field({ nullable: true })
   email: string;
 }
+
+@InputType()
+export class AnimeOrder {
+  @Field(() => String, { nullable: true })
+  order: 'avgScore' | 'updatedAt' | 'startDate' | 'titleEnglish';
+
+  @Field(() => String, { nullable: true })
+  sort: 'ASC' | 'DESC';
+}
