@@ -1,40 +1,17 @@
+import { Anime } from 'src/entities/Anime';
+import { qbSearch } from './qbSearch';
 import { AnimeSearchCriteria } from './../types/inputType';
 import { EntityTarget, getRepository } from 'typeorm';
 
 export const pagination = async (
-  Repo: EntityTarget<unknown>,
+  Repo: EntityTarget<Anime>,
   perPage: number,
   skip: number,
   search?: string,
   searchCriteria?: AnimeSearchCriteria
 ): Promise<[totalRepo: number, lastPage: number, skipPage: number]> => {
-  const qb = getRepository(Repo).createQueryBuilder('anime');
-  if (search) {
-    qb.where(
-      '(anime.titleEnglish ILIKE :titleEnglish or anime.titleRomaji ILIKE :titleRomaji)',
-      {
-        titleEnglish: `%${search}%`,
-        titleRomaji: `%${search}%`,
-      }
-    );
-  }
-  if (searchCriteria) {
-    if ('isAdult' in searchCriteria) {
-      qb.andWhere('anime.isAdult = :isAdult', {
-        isAdult: searchCriteria.isAdult,
-      });
-    }
-    if ('season' in searchCriteria) {
-      qb.andWhere('anime.season = :season', {
-        season: searchCriteria.season,
-      });
-    }
-    if ('genre' in searchCriteria) {
-      qb.andWhere('anime.genre @> ARRAY[:...genre]', {
-        genre: searchCriteria.genre,
-      });
-    }
-  }
+  let qb = getRepository(Repo).createQueryBuilder('anime');
+  qb = qbSearch(qb, search, searchCriteria);
 
   const totalRepo = await qb.getCount();
 

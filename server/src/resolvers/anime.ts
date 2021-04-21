@@ -1,3 +1,4 @@
+import { qbSearch } from './../utils/qbSearch';
 import { pagination } from './../utils/pagination';
 import { AnimePaginated, AnimeResponse } from './../types/responseType';
 import { isAuth } from './../middleware/isAuth';
@@ -175,37 +176,14 @@ export class AnimeResolver {
       searchCriteria
     );
 
-    const qb = getRepository(Anime)
+    let qb = getRepository(Anime)
       .createQueryBuilder('anime')
       .take(perPage)
       .skip(Math.abs(skipPage * perPage - perPage))
       .orderBy(`anime.${order.order}`, order.sort)
       .leftJoinAndSelect('anime.episodeList', 'episode');
 
-    if (search) {
-      qb.where(
-        '(anime.titleEnglish ILIKE :titleEnglish or anime.titleRomaji ILIKE :titleRomaji)',
-        {
-          titleEnglish: `%${search}%`,
-          titleRomaji: `%${search}%`,
-        }
-      );
-    }
-    if ('isAdult' in searchCriteria) {
-      qb.andWhere('anime.isAdult = :isAdult', {
-        isAdult: searchCriteria.isAdult,
-      });
-    }
-    if ('season' in searchCriteria) {
-      qb.andWhere('anime.season = :season', {
-        season: searchCriteria.season,
-      });
-    }
-    if ('genre' in searchCriteria) {
-      qb.andWhere('anime.genre @> ARRAY[:...genre]', {
-        genre: searchCriteria.genre,
-      });
-    }
+    qb = qbSearch(qb, search, searchCriteria);
 
     const anime = await qb.getMany();
 
