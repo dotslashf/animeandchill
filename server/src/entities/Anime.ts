@@ -36,11 +36,11 @@ export class Anime extends BaseEntity {
   titleNative: string;
 
   @Field({ nullable: true })
-  @Column({ type: 'date', nullable: true })
+  @Column({ type: 'date', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
   startDate: string;
 
   @Field({ nullable: true })
-  @Column({ type: 'date', nullable: true })
+  @Column({ type: 'date', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
   endDate: string;
 
   @Column({ type: 'enum', enum: Season, default: Season.Spring })
