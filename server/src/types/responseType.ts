@@ -19,7 +19,7 @@ export class TitleAnime {
   @Field(() => String)
   titleEnglish?: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   titleNative?: string;
 }
 
@@ -36,8 +36,8 @@ export class UserResponse extends BaseResponse {
 
 @ObjectType()
 export class AnimeResponse extends BaseResponse {
-  @Field(() => User, { nullable: true })
-  anime?: Anime;
+  @Field(() => [Anime], { nullable: true })
+  anime?: Anime[];
 }
 
 @ObjectType()

@@ -1,4 +1,4 @@
-import { AnimePaginated } from './../types/responseType';
+import { AnimePaginated, AnimeResponse } from './../types/responseType';
 import { isAuth } from './../middleware/isAuth';
 import {
   Arg,
@@ -60,11 +60,36 @@ export class AnimeResolver {
     };
   }
 
-  @Mutation(() => Anime, { nullable: true })
+  @Mutation(() => AnimeResponse, { nullable: true })
   @UseMiddleware(isAuth)
-  async addAnime(@Arg('input') input: AnimeInput): Promise<Anime> {
+  async addAnime(@Arg('input') input: AnimeInput): Promise<AnimeResponse> {
+    const checkAnime = await Anime.find({
+      where: [
+        {
+          titleEnglish: ILike(input.titleEnglish),
+        },
+        {
+          titleRomaji: ILike(input.titleRomaji),
+        },
+      ],
+    });
+
+    if (checkAnime.length > 0) {
+      return {
+        errors: [
+          {
+            field: 'Anime',
+            message: 'Already existed',
+          },
+        ],
+        anime: checkAnime,
+      };
+    }
+
     const newAnime = await Anime.create(input).save();
-    return newAnime;
+    return {
+      anime: [newAnime],
+    };
   }
 
   @Mutation(() => Boolean)
