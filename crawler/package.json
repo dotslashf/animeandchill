@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "axios": "^0.21.1",
+    "cheerio": "^1.0.0-rc.6",
+    "csv-writer": "^1.6.0",
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/cheerio": "^0.22.28",
+    "nodemon": "^2.0.7",
+    "typescript": "^4.2.4"
+  },
+  "scripts": {
+    "watch": "tsc -w",
+    "dev": "nodemon dist/index.js"
+  }
+}
