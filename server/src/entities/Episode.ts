@@ -1,4 +1,4 @@
-import { Field, ObjectType } from 'type-graphql';
+import { Field, Int, ObjectType } from 'type-graphql';
 import { Anime } from './Anime';
 import {
   BaseEntity,
@@ -24,6 +24,10 @@ export class Episode extends BaseEntity {
   @Field(() => String)
   @UpdateDateColumn()
   updatedAt: Date = new Date();
+
+  @Field(() => Int)
+  @Column()
+  e: number;
 
   @Field(() => String)
   @Column()
