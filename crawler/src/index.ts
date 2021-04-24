@@ -1,7 +1,7 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
-import * as dotenv from 'dotenv';
 import { writeToCSV } from './utils/writeCsv';
+import * as dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -44,7 +44,7 @@ const episodeCrawler = async (anime: Anime) => {
   }
 };
 
-const episodeUrlCrawler = async (episode: Episode) => {
+export const episodeUrlCrawler = async (episode: Episode) => {
   try {
     const response = await crawler.get(episode.url!);
 
